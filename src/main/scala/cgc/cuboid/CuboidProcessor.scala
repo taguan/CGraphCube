@@ -1,7 +1,7 @@
 package cgc.cuboid
 
 import java.io._
-import collection._
+//import collection._
 import io.Source
 import cgc.graph.VertexIDParser
 
@@ -22,7 +22,7 @@ object CuboidProcessor {
       }
     }
 
-    val table = new mutable.HashMap[String,Int]
+    val table = new java.util.HashMap[String,Int]
 
     new java.io.File(inputPath).listFiles().filterNot(_.getName.startsWith(".")).foreach(
       file => { println(file)
@@ -30,16 +30,31 @@ object CuboidProcessor {
       Source.fromFile(file).getLines().map(parseLine(_)).foreach(
       entry => {
         val aggregatedKey = fun.aggregate(VertexIDParser.parseID(entry._1))
-        val previousWeight = table.getOrElse(aggregatedKey,0)
-        table += (aggregatedKey -> (previousWeight + entry._2))
+        var previousWeight = table.get(aggregatedKey)
+
+        if (previousWeight == null) previousWeight = 0
+
+        table.put(aggregatedKey,previousWeight + entry._2)
+        //val previousWeight = table.getOrElse(aggregatedKey,0)
+        //table += (aggregatedKey -> (previousWeight + entry._2))
       }
 
     )} )
 
     val writer = new PrintWriter(new BufferedWriter(new FileWriter(outputPath)))
+
+    var it = table.entrySet().iterator()
+
+    while(it.hasNext){
+
+      val elem = it.next
+      writer.println(elem.getKey + "\t" + elem.getValue)
+    }
+
+    /*
     for((key,value) <- table.iterator){
       writer.println(key + "\t" + value)
-    }
+    } */
     writer.close()
 
 
