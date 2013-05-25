@@ -22,7 +22,7 @@ object CuboidProcessor {
       }
     }
 
-    val table = new java.util.TreeMap[String,java.lang.Integer]
+    val table = new java.util.HashMap[String,java.lang.Integer]
 
     new java.io.File(inputPath).listFiles().filterNot(_.getName.startsWith(".")).foreach(
       file => { println(file)
